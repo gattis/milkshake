@@ -202,7 +202,7 @@ var milk = (function(){
 	
 	initTextures(texture_list);
 
-	if (typeof webkitAudioContext != "undefined") {
+	/*if (typeof webkitAudioContext != "undefined") {
 	    context = new webkitAudioContext();   
 	    source = context.createBufferSource();
 	    var processor = context.createJavaScriptNode(512);
@@ -216,7 +216,50 @@ var milk = (function(){
 	    context.addEventListener('MozAudioAvailable', mozAudioAvailable);
 	    context.addEventListener('loadedmetadata', loadedMetadata, false);
 	    context.play();
-	}
+	    }*/
+	
+	var smjs = document.createElement("script");
+	smjs.type = "text/javascript";
+	smjs.src = "SoundManager2/soundmanager2.js";
+	smjs.onload = function() {
+
+	    soundManager.url = "/SoundManager2/";
+	    soundManager.flashVersion = 9;
+	    soundManager.useFlashBlock = false;
+	    soundManager.useHighPerformance = true;
+	    soundManager.wmode = 'transparent';
+	    soundManager.useFastPolling = true;
+	    soundManager.onready(function() {
+		    
+		    console.log(soundManager.features.waveformData);
+		    soundManager.createSound({
+			    id: 'track_2717100',
+				//url: "http://api.soundcloud.com/tracks/2717100/stream?consumer_key=4d9749247dccda26471f3fa442daa07d",
+			    url: "http://ak-media.soundcloud.com/DfC0wIbhoSDE.128.mp3?AWSAccessKeyId=AKIAJBHW5FB4ERKUQUOQ&Expires=1317192256&Signature=X2gOfWLAluc%2BX77oeROui9J6Ph4%3D&__gda__=1317192256_3bd9c8ee42302b663b23fb995e983485",
+				useWaveformData: true,
+			    onplay: function() {
+				console.log("playing");
+			    },
+			    onfinish: function() {
+				console.log("done");
+			    },
+			    whileplaying: function() {
+				//console.log(this.waveformData.left.length);
+				//console.log(this.waveformData.right.length);
+				//soundManager.stopAll();
+				if (typeof globms != "undefined") {
+				    globms.music.addPCM(this.waveformData.left, 
+							this.waveformData.right);
+				}
+			    }
+			});
+		    soundManager.play("track_2717100");
+		    
+		});
+	};
+	document.body.appendChild(smjs);
+
+
     }
 
     function runShake() {
