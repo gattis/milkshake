@@ -1,7 +1,7 @@
 
 var SoundCloudAudio = Class.extend({
 
-	playlistURL: "http://soundcloud.com/diplo-1/robyn-x-diplo-dance-hall-queen",
+	playlistURL: "http://soundcloud.com/mattgattis/favorites",
 	clientId: "4d9749247dccda26471f3fa442daa07d",
 
 	init: function () {
@@ -39,7 +39,10 @@ var SoundCloudAudio = Class.extend({
 	    var songs;
 	    if ("tracks" in response)
 		songs = response.tracks;
-	    else songs = [response];
+	    else if (0 in response)
+		songs = response;
+	    else
+		songs = [response];
 
 	    for (var i = 0; i < songs.length; i++) {
 		var song = songs[i];
@@ -50,7 +53,7 @@ var SoundCloudAudio = Class.extend({
 		soundManager.createSound({
 			id: trackId,
 			url: url,
-			autoPlay: true,
+			autoPlay: (i == 0),
 			useWaveformData: true,
 			whileplaying: function() {
 			    if (typeof shaker != "undefined") {
@@ -78,6 +81,7 @@ var SoundCloudAudio = Class.extend({
 			}
 		 });
 	    }
+    
 	},
 
 	updateInfoBox: function(info) {
