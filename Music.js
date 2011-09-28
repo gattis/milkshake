@@ -45,10 +45,6 @@ var Music = Class.extend({
 	    this.pcmdataL = new Float32Array(this.numsamples);
 	    this.pcmdataR = new Float32Array(this.numsamples);
 
-	    //this.w = new Float32Array(this.numsamples);
-	    //this.ip = new Integer32Array(this.numsamples);
-	    //this.ip[0] = 0;
-
 	},
 	
 	reset: function() {
@@ -62,11 +58,23 @@ var Music = Class.extend({
 	},
 
 	addPCM: function(left, right) {
-	    for (var i = 0; i < this.numsamples; i++) {
-		this.PCML[i] = left[i];
-		this.PCMR[i] = right[i];
+
+	    if (this.numsamples == left.length && this.numsamples.right == right.length)
+		for (var i = 0; i < this.numsamples; i++) {
+		    this.PCML[i] = left[i];
+		    this.PCMR[i] = right[i];
+		}
+	    else { // assume 256 samples and interpolate
+		for (var i = 0; i < 255; i++) {
+		    this.PCML[2*i] = left[i];
+		    this.PCML[2*i+1] = (left[i] + left[i+1]) / 2;
+		    this.PCMR[2*i] = right[i];
+		    this.PCMR[2*i+1] = (right[i] + right[i+1]) / 2;
+		}
+		this.PCML[510] = this.PCML[511] = left[255];
+		this.PCMR[510] = this.PCMR[511] = right[255];
 	    }
-	    
+
 	    for (var i = 0; i < this.numsamples; i++) {
 		this.pcmdataL[i] = this.PCML[this.numsamples - 1 - i];
 		this.pcmdataR[i] = this.PCMR[this.numsamples - 1 - i];

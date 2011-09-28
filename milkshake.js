@@ -21,26 +21,63 @@
 
 var milk = (function(){
 
+
+    /* 
+     * JavaScipt Class Includes 
+     */
+
     var req = new XMLHttpRequest();
     req.open("GET", "Class.js", false); req.send(); eval(req.responseText);
-    req.open("GET", "Shake.js", false); req.send(); eval(req.responseText);
+    req.open("GET", "Shaker.js", false); req.send(); eval(req.responseText);
+    req.open("GET", "Music.js", false); req.send(); eval(req.responseText);
+    req.open("GET", "HTML5Audio.js", false); req.send(); eval(req.responseText);
+    req.open("GET", "SoundCloudAudio.js", false); req.send(); eval(req.responseText);
+    req.open("GET", "Renderer.js", false); req.send(); eval(req.responseText);
+    req.open("GET", "Renderable.js", false); req.send(); eval(req.responseText);
     req.open("GET", "RenderItemMatcher.js", false); req.send(); eval(req.responseText);
     req.open("GET", "RenderItemMergeFunction.js", false); req.send(); eval(req.responseText);
-    req.open("GET", "Renderable.js", false); req.send(); eval(req.responseText);
     req.open("GET", "Variables.js", false); req.send(); eval(req.responseText);
-    req.open("GET", "Presets.js", false); req.send(); eval(req.responseText);
     req.open("GET", "MilkDropPreset.js", false); req.send(); eval(req.responseText);
     req.open("GET", "PerPixelMesh.js", false); req.send(); eval(req.responseText);
-    req.open("GET", "Music.js", false); req.send(); eval(req.responseText);
     req.open("GET", "PipelineContext.js", false); req.send(); eval(req.responseText);
-    req.open("GET", "Renderer.js", false); req.send(); eval(req.responseText);
     req.open("GET", "TimeKeeper.js", false); req.send(); eval(req.responseText);
+    req.open("GET", "Presets.js", false); req.send(); eval(req.responseText);
+ 
 
-    var milkshake;
+    /* 
+     * Core Animation Interface 
+     */
+
+    var shaker;
+    var canvas;
+    var audio;
+
+    function shake(elementId) {
+	canvas = document.getElementById(elementId);
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+	initGL(function () {
+		shaker = new Shaker();
+		animationLoop();
+		setInterval(function() {
+			shaker.selectNext(true);
+		    }, 10000);		
+	    });
+	audio = new SoundCloudAudio();
+    }
+
+    var requestAnimFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+    function animationLoop() {
+	shaker.renderFrame.call(shaker);
+	requestAnimFrame(animationLoop, canvas);
+    }
+
+
+    /* 
+     * Global WebGL, Programmable Shader, and Linear Algebra Routines 
+     */
+
     var gl;
-    var textures = {};
-    var shaderProgram;
-    var globms;
 
     var U_PROJECTION = 0;
     var U_MODELVIEW = 1;
@@ -50,10 +87,10 @@ var milk = (function(){
     var U_TEXTURE_COORD_ARRAY = 1;
     var U_COLOR_ARRAY = 2;
     
-    var mvMatrix = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
-    var prMatrix = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+    var mvMatrix  = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+    var prMatrix  = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
     var mvpMatrix = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
-    var txMatrix = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+    var txMatrix  = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
     var activeMatrix = prMatrix;
 
     var mvStack = [];
@@ -80,70 +117,22 @@ var milk = (function(){
     var enablestexloc;
     var enablevcoloc;
 
-    var loads = 0;
+    var textures = {};
     var texture_list = ["title.png"];
-    
-    function getShader(type,source) {
-	var shader; 
-	shader = gl.createShader(type);
-	gl.shaderSource(shader, source);
-	gl.compileShader(shader);
-	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-	    alert("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
-	    return null;
-	}
-	return shader;
-    }
+    var texloads = 0;
 
+    function initGL(callback) {
 
+	gl = canvas.getContext("experimental-webgl", {
+		alpha: false,
+		depth: false,
+		stencil: false,
+		antialias: false,
+		premultipliedAlpha: true,
+		preserveDrawingBuffer: false,
+	    });
 
-    function handleTextureLoad() {
-	
-	var srcsplit = this.src.split("/");
-	var url = srcsplit[srcsplit.length-1];
-	gl.bindTexture(gl.TEXTURE_2D, this.tex);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-	
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-	gl.bindTexture(gl.TEXTURE_2D, null);
-	
-	textures[url] = this.tex;
-	loads += 1;
-	if (loads == texture_list.length)
-	    runShake();   
-    }
-
-
-    function initTextures(urls) {
-	for (var i = 0; i < urls.length; i++) {
-	    var img = new Image();
-	    img.tex = gl.createTexture();
-	    img.onload = handleTextureLoad;
-	    img.src = urls[i];
-	}
-    }
-
-
-    function shake() {
-
-	milkshake = document.getElementById("milkshake");
-	milkshake.width = window.innerWidth;
-	milkshake.height = window.innerHeight;
-	gl = milkshake.getContext("experimental-webgl", 
-			  {
-			      alpha: false,
-			      depth: false,
-			      stencil: false,
-			      antialias: false,
-			      premultipliedAlpha: true,
-			      preserveDrawingBuffer: false,
-			   
-			  });
-	var vertexShader = getShader(gl.VERTEX_SHADER,
+	var vertexShader = loadShader(gl.VERTEX_SHADER,
          "precision mediump float; \
           attribute vec4 a_position; \
           attribute vec4 a_texCoord; \
@@ -165,7 +154,7 @@ var milk = (function(){
             gl_PointSize = u_pointsize; \
           }");
 
-	var fragmentShader = getShader(gl.FRAGMENT_SHADER,
+	var fragmentShader = loadShader(gl.FRAGMENT_SHADER,
 	 "precision mediump float; \
           varying vec4 v_texCoord; \
      	  uniform sampler2D s_texture; \
@@ -178,12 +167,12 @@ var milk = (function(){
 	      gl_FragColor = v_color; \
 	  }");
 
-	shaderProgram = gl.createProgram();
+	var shaderProgram = gl.createProgram();
 	gl.attachShader(shaderProgram, vertexShader);
 	gl.attachShader(shaderProgram, fragmentShader);
 	gl.linkProgram(shaderProgram);
 	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
-	    alert("Unable to initialize the shader program.");
+	    throw Error("Unable to initialize the shader program.");
 	gl.useProgram(shaderProgram); 
     
 	vertexPos = gl.getAttribLocation(shaderProgram,"a_position");
@@ -197,170 +186,36 @@ var milk = (function(){
 	enablestexloc = gl.getUniformLocation(shaderProgram,"enable_s_texture");
 	enablevcoloc = gl.getUniformLocation(shaderProgram,"enable_v_color");
 	
-	initTextures(texture_list);
-
-	/*if (typeof webkitAudioContext != "undefined") {
-	    context = new webkitAudioContext();   
-	    source = context.createBufferSource();
-	    var processor = context.createJavaScriptNode(512);
-	    processor.onaudioprocess = audioAvailable;
-	    source.connect(processor);
-	    processor.connect(context.destination);
-	    loadSample("song.ogg");
-	} else {
-	    context = new Audio();
-	    context.src = "song.ogg";
-	    context.addEventListener('MozAudioAvailable', mozAudioAvailable);
-	    context.addEventListener('loadedmetadata', loadedMetadata, false);
-	    context.play();
-	    }*/
-	
-	var smjs = document.createElement("script");
-	smjs.type = "text/javascript";
-	smjs.src = "SoundManager2/soundmanager2.js";
-	smjs.onload = function() {
-
-	    soundManager.url = "/SoundManager2/";
-	    soundManager.flashVersion = 9;
-	    soundManager.useFlashBlock = false;
-	    soundManager.useHighPerformance = true;
-	    soundManager.wmode = 'transparent';
-	    soundManager.useFastPolling = true;
-	    soundManager.onready(function() {
-		    
-		    console.log(soundManager.features.waveformData);
-		    soundManager.createSound({
-			    id: 'track_2717100',
-				//url: "http://api.soundcloud.com/tracks/2717100/stream?consumer_key=4d9749247dccda26471f3fa442daa07d",
-			    url: "http://ak-media.soundcloud.com/DfC0wIbhoSDE.128.mp3?AWSAccessKeyId=AKIAJBHW5FB4ERKUQUOQ&Expires=1317192256&Signature=X2gOfWLAluc%2BX77oeROui9J6Ph4%3D&__gda__=1317192256_3bd9c8ee42302b663b23fb995e983485",
-				useWaveformData: true,
-			    onplay: function() {
-				console.log("playing");
-			    },
-			    onfinish: function() {
-				console.log("done");
-			    },
-			    whileplaying: function() {
-				//console.log(this.waveformData.left.length);
-				//console.log(this.waveformData.right.length);
-				//soundManager.stopAll();
-				if (typeof globms != "undefined") {
-				    globms.music.addPCM(this.waveformData.left, 
-							this.waveformData.right);
-				}
-			    }
-			});
-		    soundManager.play("track_2717100");
-		    
-		});
-	};
-	document.body.appendChild(smjs);
-
-
-    }
-
-    function runShake() {
-	globms = new Shake();
-	runFrames();
-	setInterval(switchPreset, 10000);
-    }
-
-    var context,source,processor;
-
-    function loadSample(url) {
-
-	var request = new XMLHttpRequest();
-	request.open("GET", url, true);
-	request.responseType = "arraybuffer";
-	
-	request.onload = function() {
-	    context.decodeAudioData(request.response, function(buffer) {
-		    source.buffer = buffer;
-		    source.looping = true;
-		    source.noteOn(0);
-		});
-	    
+	for (var i = 0; i < texture_list.length; i++) {
+	    var img = new Image();
+	    img.tex = gl.createTexture();
+	    img.onload = function() {
+		gl.bindTexture(gl.TEXTURE_2D, this.tex);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.bindTexture(gl.TEXTURE_2D, null);	
+		textures[this.src.split("/").pop()] = this.tex;
+		texloads += 1;
+		if (texloads == texture_list.length)
+		    callback();
+	    };
+	    img.src = texture_list[i];
 	}
-	
-	request.send();
+
     }
 
-    function audioAvailable(event) {
-	
-	var inputArrayL = event.inputBuffer.getChannelData(0);
-	var inputArrayR = event.inputBuffer.getChannelData(1);
-	var outputArrayL = event.outputBuffer.getChannelData(0);
-	var outputArrayR = event.outputBuffer.getChannelData(1);  
-	var n = inputArrayL.length;
-	
-	for (var i = 0; i < n; ++i) {
-	    outputArrayL[i] = inputArrayL[i];
-	    outputArrayR[i] = inputArrayR[i];
-	}
-	
-	if (typeof globms != "undefined")
-	    globms.music.addPCM(inputArrayL, inputArrayR);
+    function loadShader(type,source) {
+	var shader; 
+	shader = gl.createShader(type);
+	gl.shaderSource(shader, source);
+	gl.compileShader(shader);
+	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+	    throw Error("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
+	return shader;
     }
-
-    var frameBufferLength,channels,rate;
-    
-    function loadedMetadata() {
-	channels          = context.mozChannels;
-	rate              = context.mozSampleRate;
-	frameBufferLength = context.mozFrameBufferLength;
-    }
-    
-    function mozAudioAvailable(event) {	
-	var fb = event.frameBuffer;
-	var signalL = new Float32Array(fb.length / 2);
-	var signalR = new Float32Array(fb.length / 2);
-	for (var i = 0; i < frameBufferLength / 2; i++) {
-	    signalL[i] = fb[2*i];
-	    signalR[i] = fb[2*i+1];
-	}
-	
-	if (typeof globms != "undefined")
-	    globms.music.addPCM(signalL, signalR);
-    }
-
-    function switchPreset() {
-	globms.selectNext(true);
-    }
-
-    var requestAnimFrame = (function(){
-       return  window.requestAnimationFrame       || 
-	    window.webkitRequestAnimationFrame || 
-	    window.mozRequestAnimationFrame    || 
-	    window.oRequestAnimationFrame      || 
-	    window.msRequestAnimationFrame     || 
-       function(callback, element){
-	    window.setTimeout(callback, 1000 / 60);
-       };
-    })();
-
-    function runFrames() {
-	var nextRun = globms.renderFrame.apply(globms,[]);
-	requestAnimFrame(runFrames, milkshake);
-    }
-
-    function errorString(error) {
-	if (error == gl.INVALID_ENUM)
-	    return "INVALID_ENUM";
-	if (error == gl.INVALID_VALUE)
-	    return "INVALID_VALUE";
-	if (error == gl.INVALID_OPERATION)
-	    return "INVALID_OPERATION";
-	if (error == gl.OUT_OF_MEMORY)
-	    return "OUT_OF_MEMORY";
-    }
-
-    function checkError(source) {
-	var error = gl.getError();
-	if (error == gl.NO_ERROR)
-	    return;
-	print("OPENGL ERROR - SOURCE: " + source + " - " + errorString(error));
-    }
-
 
     function uMatrixMode(mode) {
 	if (mode == U_PROJECTION) {
@@ -548,7 +403,6 @@ var milk = (function(){
 	    enablevco = false; 
     }
 
-
     function uDrawArrays(mode, first, count) {
 	gl.uniform1i(enablestexloc, enablestex);
 	gl.uniform1i(enablevcoloc, enablevco);
@@ -565,6 +419,14 @@ var milk = (function(){
 	    gl.disableVertexAttribArray(colorPos);
 	gl.drawArrays(mode, first, count);
     }
+
+    function checkError(source) {
+	var error = gl.getError();
+	if (error == gl.NO_ERROR)
+	    return;
+	throw Error("OpenGL Error from " + source + ": " + error);
+    }
+
 
     return {shake: shake};
 	
