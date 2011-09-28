@@ -36,9 +36,6 @@ var milk = (function(){
     req.open("GET", "Renderer.js", false); req.send(); eval(req.responseText);
     req.open("GET", "TimeKeeper.js", false); req.send(); eval(req.responseText);
 
-
-    var RenderItemMatcher,RenderItemMergeFunction,Renderable;
-
     var milkshake;
     var gl;
     var textures = {};
