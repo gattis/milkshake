@@ -107,7 +107,7 @@ var Shake = Class.extend({
 	    this.count++;
 	    if (this.count % 100 == 0) {
 		this.renderer.realfps = 100.0/((TimeKeeper.getTicks(this.timeKeeper.startTime)-this.fpsstart)/1000);
-		document.getElementById("fps").innerHTML = Math.round(this.renderer.realfps*100)/100;
+		//document.getElementById("fps").innerHTML = Math.round(this.renderer.realfps*100)/100;
 		this.fpsstart = TimeKeeper.getTicks(this.timeKeeper.startTime);
 	    }
 	    var timediff = TimeKeeper.getTicks(this.timeKeeper.startTime) - this.timestart;
