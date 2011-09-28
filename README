@@ -1,6 +1,7 @@
 milkshake -- A browser-based WebGL music visualizer based on Milkdrop / projectM
 
 Copyright (C) 2011 Matt Gattis and contributors
+http://github.com/gattis/milkshake
 
 Overview
 --------
@@ -16,3 +17,24 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
 
 
+Installing
+----------
+
+See milkshake.html for an example installation.
+
+
+Presets
+-------
+
+The presets are stored in Presets.js.  They are very similar to milkdrop presets, 
+except they are formatted in JSON.  The convert_preset.py script is a handy tool to
+convert your favority mildrop presets.  Most milkdrop presets are now working, and I've
+included a nice set of working ones already in Presets.js.
+
+
+Development
+-----------
+
+The project is still very much under development.  Any help would be greatly 
+appreciated.  Send pull requests on GitHub for any fixes or improvements you 
+are able to make.
