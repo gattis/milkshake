@@ -6,6 +6,18 @@ http://github.com/gattis/milkshake
 Overview
 --------
 
+milkshake is a broswer-based music visualizer implemented using WebGL
+APIs available in the latest browsers.  It is a rendering engine which
+takes in preset scripts and outputs visualizations that sync in various ways
+with music.  The preset format comes from MilkDrop, which was a rendering 
+engine built with DirectX as a WinAmp plug-in (Windows only).  projectM
+is a reimplementation of MilkDrop using OpenGL 1.0.  milkshake is yet another
+reimplementation using WebGL, which is a browser-based implementation of
+OpenGL 2.0 ES.  The main difference in implementations, besides being 
+written in javascript, is that WebGL (OpenGL ES 2.0) has no fixed function 
+pipeline like OpenGL 1.0, so all of that functionality has to be emulated 
+in programmable shaders.
+
 milkshake is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
@@ -38,3 +50,14 @@ Development
 The project is still very much under development.  Any help would be greatly 
 appreciated.  Send pull requests on GitHub for any fixes or improvements you 
 are able to make.
+
+
+Credit Due
+----------
+
+Ryan Geiss - The creator of MilkDrop - http://www.geisswerks.com/about_milkdrop.html
+projectM - OpenGL reimplementation of MilkDrop - http://projectm.sourceforge.net/
+
+
+
+
