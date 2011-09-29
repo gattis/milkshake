@@ -59,13 +59,11 @@ var SoundCloudAudio = Class.extend({
 			    if (typeof shaker != "undefined") {
 				var left = this.waveformData.left;
 				var right = this.waveformData.right;
-				var waveBufL = new Float32Array();
-				var waveBufR = new Float32Array();
 				for (i = 0; i < 256; i++) {
-				    waveBufL[i] = parseFloat(left[i]);
-				    waveBufR[i] = parseFloat(right[i]);
+				    left[i] = parseFloat(left[i]);
+				    right[i] = parseFloat(right[i]);
 				}
-				shaker.music.addPCM(waveBufL, waveBufR);
+				shaker.music.addPCM(left, right);
 			    }
 			},
 			onplay: function() {
