@@ -69,7 +69,8 @@ var SoundCloudAudio = Class.extend({
 			    }
 			},
 			onplay: function() {
-			    shaker.infoMessages["SoundCloud"] = "music courtesy of " + song.user.username + 
+			    shaker.infoMessages["SoundCloud"] = "music courtesy of <a href='" +
+				song.user.permalink_url + "'>" + song.user.username + "</a>" + 
 				" - <a href='" + song.permalink_url + "'>" + song.title + "</a> - " +
 				"powered by <a href='http://soundcloud.com/'>soundcloud</a>";
 			},

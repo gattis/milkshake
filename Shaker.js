@@ -111,7 +111,7 @@ var Shaker = Class.extend({
 	    this.count++;
 	    if (this.count % 100 == 0) {
 		this.renderer.realfps = 100.0/((TimeKeeper.getTicks(this.timeKeeper.startTime)-this.fpsstart)/1000);
-		this.infoMessages["fps"] = "rendering at " + Math.round(this.renderer.realfps*100)/100 + " frames per second...";
+		this.infoMessages["fps"] = "rendering at " + Math.round(this.renderer.realfps*100)/100 + " frames per second";
 		this.fpsstart = TimeKeeper.getTicks(this.timeKeeper.startTime);
 	    }
 	    if (this.count % 400 == 0)
@@ -173,8 +173,6 @@ var Shaker = Class.extend({
 	    this.infoBox.style.left = (canvas.offsetLeft + 30) + "px";
             this.infoBox.style.top = (canvas.offsetTop + canvas.offsetHeight - 60) + "px";
 
-            //document.body.appendChild(this.infoBox);
-
             this.infoBox.style.fontSize = "9pt";
             this.infoBox.style.fontFamily = "Lucida Grande";
 	    this.infoBox.style.fontWeight = "bold";
@@ -182,6 +180,7 @@ var Shaker = Class.extend({
             this.infoBox.style.paddingTop = "5px";
             this.infoBox.style.paddingBottom = "5px";
 	    this.infoBox.style.borderRadius = "3px";
+	    this.infoBox.style.textAlign = "center";
 
             this.infoBox.style.backgroundColor = "rgba(255,255,255,0.5)";
 
@@ -192,6 +191,7 @@ var Shaker = Class.extend({
 	    if (this.infoBoxPos == -1 && Object.keys(this.infoMessages).length > 0) {
 		this.infoBoxPos = 0;
 		document.body.appendChild(this.infoBox);
+		this.infoMessages["ShamelessPlug"] = "fork me on <a href='http://github.com/gattis/milkshake'>github</a>!";
 	    }
 	    if (this.infoBoxPos > -1) {
 		this.infoBox.style.height = "15px";
