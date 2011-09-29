@@ -1,4 +1,4 @@
-var Shake = Class.extend({
+var Shaker = Class.extend({
 	
 	init: function() {
 	    this.settings = {
@@ -54,7 +54,11 @@ var Shake = Class.extend({
 	    this.renderer.correction = this.settings.aspectCorrection;
 	    this.music.beat_sensitivity = this.settings.beatSensitivity;
 
+	    this.infoMessages = {};
+	    this.infoBoxPos = -1;
+	    this.createInfoBox();
 	    this.timeKeeper.StartPreset();
+
 	},
 
 	reset: function() {
@@ -107,9 +111,12 @@ var Shake = Class.extend({
 	    this.count++;
 	    if (this.count % 100 == 0) {
 		this.renderer.realfps = 100.0/((TimeKeeper.getTicks(this.timeKeeper.startTime)-this.fpsstart)/1000);
-		//document.getElementById("fps").innerHTML = Math.round(this.renderer.realfps*100)/100;
+		this.infoMessages["fps"] = "rendering at " + Math.round(this.renderer.realfps*100)/100 + " frames per second";
 		this.fpsstart = TimeKeeper.getTicks(this.timeKeeper.startTime);
 	    }
+	    if (this.count % 400 == 0)
+		this.renderInfoBox();
+
 	    var timediff = TimeKeeper.getTicks(this.timeKeeper.startTime) - this.timestart;
 	    if (timediff < this.mspf)
 		return Math.floor(this.mspf-timediff);
@@ -155,8 +162,45 @@ var Shake = Class.extend({
 
 	presetSwitchedEvent: function() {
 
-	}
+	},
 
+	createInfoBox: function() {
+
+	    this.infoBox = document.createElement('div');
+            this.infoBox.style.position = "absolute";
+            this.infoBox.style.height = "0px";
+            this.infoBox.style.width = (canvas.width - 80) + "px";
+	    this.infoBox.style.left = (canvas.offsetLeft + 30) + "px";
+            this.infoBox.style.top = (canvas.offsetTop + canvas.offsetHeight - 60) + "px";
+
+            this.infoBox.style.fontSize = "9pt";
+            this.infoBox.style.fontFamily = "Lucida Grande";
+	    this.infoBox.style.fontWeight = "bold";
+            this.infoBox.style.paddingLeft = "20px";
+            this.infoBox.style.paddingTop = "5px";
+            this.infoBox.style.paddingBottom = "5px";
+	    this.infoBox.style.borderRadius = "3px";
+	    this.infoBox.style.textAlign = "center";
+
+            this.infoBox.style.backgroundColor = "rgba(255,255,255,0.5)";
+
+	    
+        },
+
+	renderInfoBox: function() {
+	    if (this.infoBoxPos == -1 && Object.keys(this.infoMessages).length > 0) {
+		this.infoBoxPos = 0;
+		document.body.appendChild(this.infoBox);
+		this.infoMessages["ShamelessPlug"] = "fork me on <a href='http://github.com/gattis/milkshake'>github</a>!";
+	    }
+	    if (this.infoBoxPos > -1) {
+		this.infoBox.style.height = "15px";
+		this.infoBox.innerHTML = this.infoMessages[Object.keys(this.infoMessages)[this.infoBoxPos]];
+		this.infoBoxPos++;
+		if (this.infoBoxPos == Object.keys(this.infoMessages).length)
+		    this.infoBoxPos = 0;
+	    }
+	}
 	
 	
     });

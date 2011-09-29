@@ -42,30 +42,12 @@
       z-index: 0;
       border: none;
     }
-       
-    #stats {
-      position: absolute;
-      right: 10px;
-      bottom: 10px;
-      border: 2px solid black;
-      padding: 7px;
-      margin: 5px 0 5px 0;
-      width: 80px;
-      text-align: center;
-      background-color: white;
-      z-index: 1;
-    }
     </style>
 
   </head>
 
-  <body onload="milk.shake();">
-    <div id="stats">
-      <table>
-	<tr><td>FPS:</td><td id="fps">35</td></tr>
-      </table>
-    </div>
-    <canvas id="milkshake"></canvas>
+  <body onload="milk.shake('canvas');">
+    <canvas id="canvas"></canvas>
   </body>
 
 </html>
