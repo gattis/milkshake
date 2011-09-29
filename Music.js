@@ -75,6 +75,7 @@ var Music = Class.extend({
 		this.PCMR[510] = this.PCMR[511] = right[255];
 	    }
 
+
 	    for (var i = 0; i < this.numsamples; i++) {
 		this.pcmdataL[i] = this.PCML[this.numsamples - 1 - i];
 		this.pcmdataR[i] = this.PCMR[this.numsamples - 1 - i];
