@@ -44,6 +44,15 @@ convert your favority mildrop presets.  Most milkdrop presets are now working, a
 included a nice set of working ones already in Presets.js.
 
 
+Audio
+-----
+
+By default, audio is currently provided by SoundCloud via the SoundCloudAudio.js backend.
+This depends on Flash.  There is also a backend for HTML5 Audio called HTML5Audio.js that
+you can use.  We wish to add many more audio backends in the future, including local uploads
+via the new File API.
+
+
 Development
 -----------
 
