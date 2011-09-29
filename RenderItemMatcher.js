@@ -3,7 +3,7 @@ var RenderItemMatcher = Class.extend({
 	    this.results = new this.MatchResults();
 	    this.weights = [];
 	    for (var i = 0; i < this.MAXIMUM_SET_SIZE; i++)
-		this.weights.push(new Float64Array(this.MAXIMUM_SET_SIZE));
+		this.weights.push(new Float32Array(this.MAXIMUM_SET_SIZE));
 	},
 
 	MAXIMUM_SET_SIZE: 1000,

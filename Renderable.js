@@ -577,7 +577,11 @@ var Shape = RenderItem.extend({
                     break;
                 } catch (error) {
                     if (error.name == "ReferenceError") {
-                        var customVar = error.message.split(" ")[0];
+                        var customVar;
+			if (error.message.indexOf("Can't find variable:") == 0)
+			    customVar = error.message.split(" ").pop();
+			else
+			    customVar = error.message.split(" ")[0];
                         this.framePool[customVar] = 0;
                         testPool[customVar] = 0;
                     } else

@@ -44,6 +44,7 @@ var SoundCloudAudio = Class.extend({
 	    else
 		songs = [response];
 	    audio.songs = songs;
+
 	    for (var i = 0; i < songs.length; i++) {
 		var song = songs[i];
 		var url = song.stream_url + ((song.stream_url.indexOf("?") == -1) ? "?" : "&") + "client_id=" + audio.clientId;

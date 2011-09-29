@@ -58,15 +58,18 @@ var milk = (function(){
 	canvas.height = window.innerHeight;
 	initGL(function () {
 		shaker = new Shaker();
+		audio = new SoundCloudAudio();
 		animationLoop();
 		setInterval(function() {
 			shaker.selectNext(true);
 		    }, 10000);		
 	    });
-	audio = new SoundCloudAudio();
+
     }
 
-    var requestAnimFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+    var requestAnimFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame ||
+                           function(callback, element){window.setTimeout(callback, 1000 / 60);};
+
     function animationLoop() {
 	shaker.renderFrame.call(shaker);
 	requestAnimFrame(animationLoop, canvas);
