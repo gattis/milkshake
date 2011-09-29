@@ -43,7 +43,7 @@ var SoundCloudAudio = Class.extend({
 		songs = response;
 	    else
 		songs = [response];
-
+	    audio.songs = songs;
 	    for (var i = 0; i < songs.length; i++) {
 		var song = songs[i];
 		var url = song.stream_url + ((song.stream_url.indexOf("?") == -1) ? "?" : "&") + "client_id=" + audio.clientId;
@@ -67,9 +67,10 @@ var SoundCloudAudio = Class.extend({
 			    }
 			},
 			onplay: function() {
+			    var s = audio.songs[audio.trackPos];
 			    shaker.infoMessages["SoundCloud"] = "music courtesy of <a href='" +
-				song.user.permalink_url + "'>" + song.user.username + "</a>" + 
-				" - <a href='" + song.permalink_url + "'>" + song.title + "</a> - " +
+				s.user.permalink_url + "'>" + s.user.username + "</a>" + 
+				" - <a href='" + s.permalink_url + "'>" + s.title + "</a> - " +
 				"powered by <a href='http://soundcloud.com/'>soundcloud</a>";
 			},
 			onfinish: function() {
