@@ -1,13 +1,22 @@
 
 var SoundCloudAudio = Class.extend({
 
-	playlistURL: "http://soundcloud.com/mattgattis/favorites",
 	clientId: "4d9749247dccda26471f3fa442daa07d",
 
 	init: function () {
 
 	    this.tracks = [];
 	    this.trackPos = 0;
+
+	    this.playlistURL = "http://soundcloud.com/mattgattis/favorites";
+	    var args = window.location.search.substring(1).split("&");
+	    for (var i = 0; i < args.length; i++) {
+		var arg = args[i].split("=");
+		if (arg[0] == "tracks") {
+		    this.playlistURL = unescape(arg[1]);
+		    break;
+		}
+	    }
 
 	    var smjs = document.createElement("script");
 	    smjs.type = "text/javascript";
