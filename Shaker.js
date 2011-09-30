@@ -192,6 +192,7 @@ var Shaker = Class.extend({
 		this.infoBoxPos = 0;
 		document.body.appendChild(this.infoBox);
 		this.infoMessages["ShamelessPlug"] = "fork me on <a href='http://github.com/gattis/milkshake'>github</a>!";
+		this.infoMessages["ChooseTracks"] = "<a href='bookmarklet.html'>Choose Audio Tracks</a>";
 	    }
 	    if (this.infoBoxPos > -1) {
 		this.infoBox.style.height = "15px";

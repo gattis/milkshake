@@ -47,10 +47,14 @@ included a nice set of working ones already in Presets.js.
 Audio
 -----
 
-By default, audio is currently provided by SoundCloud via the SoundCloudAudio.js backend.
-This depends on Flash.  There is also a backend for HTML5 Audio called HTML5Audio.js that
-you can use.  We wish to add many more audio backends in the future, including local uploads
-via the new File API.
+By default, the SoundCloud API is used to provide music using the 
+SoundCloudAudio.js backend, which depends on Flash.  The other backend
+available is HTML5Audio.js, which can play MP3 encoded audio in Chrome
+and Ogg Vorbis encoded audio in Firefox.  More backends will be added 
+in the future.  A brief status of future backends:
+    Rdio: Music is available via their Web playback API, but raw data is only frequency-domain.
+    Spotify: No browser-based API available yet (?)
+    Local uploads:  Available via the new File API. In development.
 
 
 Development

@@ -56,14 +56,18 @@ var milk = (function(){
 	canvas = document.getElementById(elementId);
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
-	initGL(function () {
-		shaker = new Shaker();
-		audio = new SoundCloudAudio();
-		animationLoop();
-		setInterval(function() {
-			shaker.selectNext(true);
-		    }, 10000);		
-	    });
+	try {
+	    initGL(function () {
+		    shaker = new Shaker();
+		    audio = new SoundCloudAudio();
+		    animationLoop();
+		    setInterval(function() {
+			    shaker.selectNext(true);
+			}, 10000);		
+		});
+	} catch (e) {
+	    canvas.outerHTML = "<div id='" + elementId + "' style='padding:20px;'>" + canvas.innerHTML + "</div>";
+	}
 
     }
 
