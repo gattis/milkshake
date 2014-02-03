@@ -8,7 +8,8 @@ var SoundCloudAudio = Class.extend({
 	    this.tracks = [];
 	    this.trackPos = 0;
 
-	    this.playlistURL = "http://soundcloud.com/mattgattis/favorites";
+	    this.playlistURL = "http://soundcloud.com/electro-mass/sets/dripping-section-8-recs-future/";
+//	    this.playlistURL = "http://soundcloud.com/mattgattis/favorites";
 	    var args = window.location.search.substring(1).split("&");
 	    for (var i = 0; i < args.length; i++) {
 		var arg = args[i].split("=");
