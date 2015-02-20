@@ -1,4 +1,3 @@
-
 var SoundCloudAudio = Class.extend({
 
 	clientId: "4d9749247dccda26471f3fa442daa07d",
@@ -56,6 +55,8 @@ var SoundCloudAudio = Class.extend({
 
 	    for (var i = 0; i < songs.length; i++) {
 		var song = songs[i];
+		if (! song.streamable)
+		    continue;
 		var url = song.stream_url + ((song.stream_url.indexOf("?") == -1) ? "?" : "&") + "client_id=" + audio.clientId;
 		var trackId = "track_" + song.id;
 		audio.tracks.push(trackId);
